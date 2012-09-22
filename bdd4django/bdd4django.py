@@ -11,11 +11,9 @@
 
 __version__ = '0.1.6'
 
-#  TODO  get working with python 3,4,5, etc...
-#  TODO  put http://www.dawnoftimecomics.com/index.php on comixpedia!
-
 import re
 
+#  TODO  multiple Whens for one Scenario!
 #  TODO  what happens with blank table items?
 #  ERGO  river is to riparian as pond is to ___?
 
@@ -57,7 +55,7 @@ class Morelia:
         v.visit(self)
         for step in self.steps:  step.evaluate_steps(v)
 
-    def test_step(self, v):  pass
+    def evaluate_step(self, v):  pass  #  CONSIDER  rename
     def i_look_like(self):  return self.my_class_name()
 
     def count_dimensions(self):  
@@ -71,7 +69,7 @@ class Morelia:
         
     def enforce(self, condition, diagnostic):
         if not condition:
-            raise SyntaxError(self.format_fault(diagnostic))
+            raise SyntaxError(self.format_fault(diagnostic)) #  CONSIDER format in editor-ready syntax??
 
     def format_fault(self, diagnostic):
         parent_reconstruction = ''
@@ -175,14 +173,19 @@ class Viridis(Morelia):
 
 
 class Parser:  
-    def __init__(self):  
+    ignore_scenario = False
+    scenarios = None
+
+    def __init__(self):
         self.thangs = [ Feature, Scenario,
                                     Step, Given, When, Then, And,
                                        Row, Comment ]
         self.steps = []
 
-    def parse_file(self, filename):
+    def parse_file(self, filename, scenarios = None):
         prose = open(filename, 'r').read()
+        self.scenarios = scenarios
+
         self.parse_features(prose)
         self.steps[0].filename = filename
         return self
@@ -242,10 +245,21 @@ class Parser:
         
         for klass in self.thangs:
             self.thang = klass()
+
             rx = self.thang._my_regex()
             m = re.compile(rx).match(self.line)
 
             if m and len(m.groups()) > 0:
+
+                if self.scenarios is not None:
+                    if isinstance( self.thang, Scenario ):
+                        self.ignore_scenario = False
+                        if not self.line.strip().endswith(self.scenarios):
+                            self.ignore_scenario = True
+                            continue
+                    elif self.ignore_scenario:
+                        continue
+
                 return self._register_line(m.groups())
 
     def _register_line(self, groups):
@@ -292,7 +306,7 @@ class TestVisitor:
     def visit(self, node):
         # print node.reconstruction()  # CONSIDER  if verbose
         self.suite.step = node
-        node.test_step(self)
+        node.evaluate_step(self)
 
     def owed(self, igme):  pass
 
@@ -300,7 +314,7 @@ class TestVisitor:
 class Feature(Morelia):
     def my_parent_type(self):  return None
         
-    def test_step(self, v):  
+    def evaluate_step(self, v):  
         self.enforce(0 < len(self.steps), 'Feature without Scenario(s)')
 
     def to_html(self):
@@ -327,20 +341,22 @@ class Scenario(Morelia):
         self.enforce(0 < len(self.steps), 'Scenario without step(s) - Step, Given, When, Then, And, or #')
 
         name = self.steps[0].find_step_name(visitor.suite)
-        visitor.suite = visitor.suite.__class__(name)
+        #visitor.suite = visitor.suite.__class__(name)
         # print self.predicate  #  CONSIDER  if verbose
-        visitor.suite.setUp()
+        #visitor.suite.setUp()
 
         try:
             u_owe = visitor.visit(self)
             
-            for idx, step in enumerate(self.steps):  
+            for idx, step in enumerate(self.steps):
                 if step_indices == None or idx in step_indices:  #  TODO  take out the default arg
                     step.evaluate_steps(visitor)
                     
             visitor.owed(u_owe)
-        finally:
-            visitor.suite.tearDown()
+        except:
+            pass
+        #finally:
+        #    visitor.suite.tearDown()
 
     def permute_schedule(self):  #  TODO  rename to permute_row_schedule
         dims = self.count_Row_dimensions()
@@ -397,7 +413,7 @@ class Scenario(Morelia):
 class Step(Viridis):
     def my_parent_type(self):  return Scenario
 
-    def test_step(self, v):
+    def evaluate_step(self, v):
         self.find_step_name(v.suite)
 
 # ERGO  use "born again pagan" somewhere
@@ -450,22 +466,19 @@ class Step(Viridis):
         self.copy = self.copy.replace('<'+self.replitron+'>', found)
 
         # CONSIDER  mix replitrons and matchers!
-
+        
     def to_html(self):
         return '\n<tr><td align="right" valign="top"><em>' + self.concept + '</em></td><td colspan="101">' + _clean_html(self.predicate) + '</td></tr>', ''
 
 
 class Given(Step):   #  CONSIDER  distinguish these by fault signatures!
     def prefix(self):  return '  '
-        
 class When(Step):  #  TODO  cycle these against the Scenario
     def prefix(self):  return '   '
     def to_html(self):
         return '\n<tr style="background-color: #cdffb8; background: url(http://www.zeroplayer.com/images/stuff/aqua_gradient.png) no-repeat; background-size: 100%;"><td align="right" valign="top"><em>' + self.concept + '</em></td><td colspan="101">' + _clean_html(self.predicate) + '</td></tr>', ''
-
 class Then(Step):
     def prefix(self):  return '   '
-        
 class And(Step):  
     def prefix(self):  return '    '
 
@@ -531,6 +544,10 @@ class Comment(Morelia):
     def to_html(self):
         return '\n# <em>' + _clean_html(self.predicate) + '</em><br/>', ''
 
+if __name__ == '__main__':
+    import os
+    os.system('python ../tests/morelia_suite.py')   #  NOTE  this might not return the correct shell value
+
 
 def _special_range(n):  #  CONSIDER  better name
     return xrange(n) if n else [0]
@@ -539,6 +556,7 @@ def _special_range(n):  #  CONSIDER  better name
 def _permute_indices(arr):
     return list(_product(*_imap(_special_range, arr)))
       #  tx to Chris Rebert, et al, on the Python newsgroup for curing my brainlock here!!
+
 
 def _product(*args, **kwds):
     # product('ABCD', 'xy') --> Ax Ay Bx By Cx Cy Dx Dy
@@ -568,8 +586,3 @@ def _clean_html(string):
 #  ERGO  get Morelia working with more Pythons - virtualenv it!
 #  ERGO  moralia should try the regex first then the step name
 #  ERGO  pay for "Bartender" by Sacred Hoop
-
-
-if __name__ == '__main__':
-    import os
-    os.system('python ../tests/morelia_suite.py')   #  NOTE  this might not return the correct shell value
