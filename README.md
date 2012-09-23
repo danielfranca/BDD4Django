@@ -21,8 +21,8 @@ Install it with:
 
 Requirements
 ------------
-Splinter
-Django
++ Splinter
++ Django
 
 Usage Instructions
 ------------------
