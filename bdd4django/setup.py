@@ -2,18 +2,16 @@
 # -*- coding: utf-8 -*-
 
 from distutils.core import setup
-import morelia
+import bdd4django 
 
 setup(name         = 'BDD4Django',
       version      = bdd4django.__version__,
-      description  = 'for "Behavior Driven Development" (BDD) -- ' +
-                     'a client-facing scripting language to ' +
-                     'put the squeeze on all your features',
-      author       = 'Daniel Franca
+      description  = '"Behavior Driven Development" (BDD) -- ' +
+                     'Integrating Morelia + Splinter + Django',
+      author       = u'Daniel França',
       author_email = 'daniel.franca@gmail.com',
-      url          = 'http://c2.com/cgi/wiki?MoreliaViridis',
       py_modules   = ['bdd4django'],
-      keywords     = "test bdd behavior",
+      keywords     = "test bdd behavior django splinter morelia",
       classifiers  = [
         "Intended Audience :: Developers",
         "License :: OSI Approved :: MIT License",
