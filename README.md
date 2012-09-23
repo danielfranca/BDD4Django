@@ -22,7 +22,7 @@ Install it with pip:
 Requirements
 ------------
 + Splinter
-+ Django
++ Django >= 1.4
 
 Usage Instructions
 ------------------
