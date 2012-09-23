@@ -28,7 +28,7 @@ Usage Instructions
 ------------------
 Create a testcase class that inherits from BDDTestCase:
 
-from bdd4django.helpers import BDDTestCase
+    from bdd4django.helpers import BDDTestCase
 
     class MyTests(BDDTestCase):
 
