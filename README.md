@@ -43,6 +43,8 @@ You can specificy which scenarios to run with the argument <b>scenarios</b>.
 
 Visit the <b>url</b>
 
+
+
     def step_I_click_the_link(self, name):
         r'I click the link "([^"]+)"'
 
@@ -52,6 +54,8 @@ Tries to find following the priority list:
 + by partial text
 + by href
 + by partial href
+
+
 
     def step_i_click_the_button(self, name):
         r'I click the button "([^"]+)"'
