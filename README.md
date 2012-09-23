@@ -54,9 +54,8 @@ Tries to find following the priority list:
 + by partial text
 + by href
 + by partial href
-This
 
-
+#####this
 
     def step_i_click_the_button(self, name):
         r'I click the button "([^"]+)"'
