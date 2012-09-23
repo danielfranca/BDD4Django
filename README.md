@@ -67,6 +67,8 @@ Tries to find following the priority list:
 + by text
 + by css
 
+#####
+
     def step_I_login_as_with_password(self, username, password):
         r'I login as "([^"]+)" with password "([^"]+)"'
 
@@ -86,6 +88,8 @@ Tries to fill following the priority:
 + Simple text field
 + Multiple selection
 + Radio
+
+#####
 
     def step_i_fill_in_fields_with_values(self, fields, values):
         r'I fill in fields "([^"]+)" with values "([^"]+)"'
