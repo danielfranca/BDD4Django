@@ -1,1 +1,9 @@
-**Morelia *viridis*** is fully documented on the "C2 Wiki":http://c2.com/cgi/wiki?MoreliaViridis
+BDD4DJango unifies 4 elements:
+-> Django
+-> Morelia Viridis (with added features and better Django integration)
+-> Splinter
+-> A TestCase class with helper methods to run Django tests.
+
+Morelia *viridis*** is fully documented on the "C2 Wiki":http://c2.com/cgi/wiki?MoreliaViridis
+
+Splinter is fully documented here http://splinter.cobrateam.info/docs/

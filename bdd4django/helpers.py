@@ -4,13 +4,13 @@ from django.contrib.auth.models import User
 from django.core.management import call_command
 
 from model_mommy import mommy
-from morelia import Parser
+from bdd4django import Parser
 from splinter.browser import Browser
 from selenium.common.exceptions import WebDriverException
 
 import time
 
-class EurecaTest(LiveServerTestCase):
+class BDDTestCase(LiveServerTestCase):
 
     def extra_setup(self):
         pass

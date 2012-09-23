@@ -66,9 +66,7 @@ def autotest(cmd='fab test', sleep=1):
 def test(extra=''):
     'run the short test batch for this project'
 
-    _sh('python tests/morelia_suite.py')
-    _sh('python2.5 tests/morelia_suite.py')
-    _sh('python2.6 tests/morelia_suite.py')
+    _sh('python tests/bdd4django_suite.py')
     _sh('git commit -am developing')
 
 def ci():
@@ -81,7 +79,7 @@ def up():
     'stick it in Pypi'
 
     ci()
-    with cd('morelia'):  _sh('python setup.py sdist upload')
+    with cd('bdd4django'):  _sh('python setup.py sdist upload')
 
 def todo():
     'nag messages from u to u'

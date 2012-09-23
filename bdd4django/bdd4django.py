@@ -1,19 +1,12 @@
 # -*- coding: utf-8 -*-
-#            __  __                _ _
-#           |  \/  | ___  _ __ ___| (_) __ _
-#           | |\/| |/ _ \| '__/ _ \ | |/ _` |
-#           | |  | | (_) | | |  __/ | | (_| |
-#           |_|  |_|\___/|_|  \___|_|_|\__,_|
-#                             o        o     |  o
-#                                 ,_       __|      ,
-#                        |  |_|  /  |  |  /  |  |  / \_
-#                         \/  |_/   |_/|_/\_/|_/|_/ \/
 
 __version__ = '0.1.6'
 
+#  TODO  get working with python 3,4,5, etc...
+#  TODO  put http://www.dawnoftimecomics.com/index.php on comixpedia!
+
 import re
 
-#  TODO  multiple Whens for one Scenario!
 #  TODO  what happens with blank table items?
 #  ERGO  river is to riparian as pond is to ___?
 
@@ -27,8 +20,8 @@ class Morelia:
         self.steps = []
         self.line_number = line_number
 
-#  TODO  escape the sample regices already!
-#  and the default code should be 'print <arg_names, ... >'
+        #  TODO  escape the sample regices already!
+        #  and the default code should be 'print <arg_names, ... >'
 
         for s in list[::-1]:
             mpt = self.my_parent_type()
@@ -55,10 +48,10 @@ class Morelia:
         v.visit(self)
         for step in self.steps:  step.evaluate_steps(v)
 
-    def evaluate_step(self, v):  pass  #  CONSIDER  rename
+    def test_step(self, v):  pass
     def i_look_like(self):  return self.my_class_name()
 
-    def count_dimensions(self):  
+    def count_dimensions(self):
         return sum([step.count_dimension() for step in self.steps])
 
     def count_dimension(self):    # CONSIDER  beautify this crud!
@@ -66,10 +59,10 @@ class Morelia:
 
     def validate_predicate(self):
         return  # looks good! (-:
-        
+
     def enforce(self, condition, diagnostic):
         if not condition:
-            raise SyntaxError(self.format_fault(diagnostic)) #  CONSIDER format in editor-ready syntax??
+            raise SyntaxError(self.format_fault(diagnostic))
 
     def format_fault(self, diagnostic):
         parent_reconstruction = ''
@@ -77,7 +70,7 @@ class Morelia:
         reconstruction = self.reconstruction().replace('\n', '\\n')
         args = (self.get_filename(), self.line_number, parent_reconstruction, reconstruction, diagnostic)
         return '\n  File "%s", line %s, in %s\n    %s\n%s' % args
-   
+
     def reconstruction(self):
         recon = self.prefix() + self.concept + ': ' + self.predicate
         if recon[-1] != '\n':  recon += '\n'
@@ -106,10 +99,10 @@ class Viridis(Morelia):
         arguments = '(self' + self.extra_arguments + ')'  #  note this line ain't tested! C-:
         method_name = 'step_' + re.sub('[^\w]+', '_', self.predicate)
 
-        diagnostic = 'Cannot match step: ' + self.predicate + '\n' + \
-                     'suggest:\n\n' + \
-                     '    def ' + method_name + arguments + ':\n' + \
-                     '        ' + doc_string + '\n\n' + \
+        diagnostic = 'Cannot match step: ' + self.predicate + '\n' +\
+                     'suggest:\n\n' +\
+                     '    def ' + method_name + arguments + ':\n' +\
+                     '        ' + doc_string + '\n\n' +\
                      '        # code\n\n'
 
         suite.fail(diagnostic)
@@ -161,7 +154,7 @@ class Viridis(Morelia):
     def find_steps(self, suite, regexp):
         matcher = re.compile(regexp)
         list = []
-        
+
         for s in dir(suite):
             if matcher.match(s):  list.append(s)
 
@@ -172,22 +165,22 @@ class Viridis(Morelia):
         self.method(*self.matches)
 
 
-class Parser:  
+class Parser:
+
     ignore_scenario = False
     scenarios = None
 
     def __init__(self):
         self.thangs = [ Feature, Scenario,
-                                    Step, Given, When, Then, And,
-                                       Row, Comment ]
+                        Step, Given, When, Then, And,
+                        Row, Comment ]
         self.steps = []
 
     def parse_file(self, filename, scenarios = None):
         prose = open(filename, 'r').read()
-        self.scenarios = scenarios
-
         self.parse_features(prose)
         self.steps[0].filename = filename
+        self.scenarios = scenarios
         return self
 
     def parse_features(self, prose):
@@ -211,24 +204,24 @@ class Parser:
 
         for self.line in lines.split('\n'):
             self.line_number += 1
-            
-            if not self.anneal_last_broken_line() and \
+
+            if not self.anneal_last_broken_line() and\
                not self._parse_line():
-              if 0 < len(self.steps):
-                self._append_to_previous_node()
-              else:
-                s = Step()
-                s.concept = '???'
-                s.predicate = self.line
-                s.line_number = self.line_number
-                s.enforce(False, 'feature files must start with a Feature')
+                if 0 < len(self.steps):
+                    self._append_to_previous_node()
+                else:
+                    s = Step()
+                    s.concept = '???'
+                    s.predicate = self.line
+                    s.line_number = self.line_number
+                    s.enforce(False, 'feature files must start with a Feature')
 
         return self.steps
 
     def anneal_last_broken_line(self):
         if self.steps == []:  return False  #  CONSIDER  no need me
         last_line = self.last_node.predicate
-        
+
         if re.search(r'\\\s*$', last_line):
             last = self.last_node
             last.predicate += '\n' + self.line
@@ -236,16 +229,15 @@ class Parser:
 
         return False
 
-#  TODO  permit line breakers in comments
-#    | Given a table with one row 
-#        \| i \| be \| a \| lonely \| row |  table with only one row, line 1
+    #  TODO  permit line breakers in comments
+    #    | Given a table with one row
+    #        \| i \| be \| a \| lonely \| row |  table with only one row, line 1
 
     def _parse_line(self):
         self.line = self.line.rstrip()
-        
+
         for klass in self.thangs:
             self.thang = klass()
-
             rx = self.thang._my_regex()
             m = re.compile(rx).match(self.line)
 
@@ -254,10 +246,11 @@ class Parser:
                 if self.scenarios is not None:
                     if isinstance( self.thang, Scenario ):
                         self.ignore_scenario = False
+
                         if not self.line.strip().endswith(self.scenarios):
                             self.ignore_scenario = True
-                            continue
-                    elif self.ignore_scenario:
+
+                    if self.ignore_scenario:
                         continue
 
                 return self._register_line(m.groups())
@@ -292,7 +285,7 @@ class ReportVisitor:
         return we_owe
 
     def owed(self, owed):  self.string += owed
-        
+
     def __str__(self):
         return self.string
 
@@ -306,25 +299,26 @@ class TestVisitor:
     def visit(self, node):
         # print node.reconstruction()  # CONSIDER  if verbose
         self.suite.step = node
-        node.evaluate_step(self)
+        node.test_step(self)
 
     def owed(self, igme):  pass
 
 
 class Feature(Morelia):
     def my_parent_type(self):  return None
-        
-    def evaluate_step(self, v):  
+
+    def test_step(self, v):
         self.enforce(0 < len(self.steps), 'Feature without Scenario(s)')
 
     def to_html(self):
         return ['\n<div><table><tr style="background-color: #aaffbb;" width="100%">' +
-                                  '<td align="right" valign="top" width="100">' + 
-                                  '<em>' + self.concept + '</em>:</td><td colspan="101">' + 
-                                    _clean_html(self.predicate) + '</td></tr></table></div>', '']
+                '<td align="right" valign="top" width="100">' +
+                '<em>' + self.concept + '</em>:</td><td colspan="101">' +
+                _clean_html(self.predicate) + '</td></tr></table></div>', '']
 
 
 class Scenario(Morelia):
+
     def my_parent_type(self):  return Feature
 
     def evaluate_steps(self, visitor):
@@ -336,7 +330,7 @@ class Scenario(Morelia):
             for indices in schedule:
                 self.row_indices = indices
                 self.evaluate_test_case(visitor, step_indices)  #  note this works on reports too!
-    
+
     def evaluate_test_case(self, visitor, step_indices = None):  #  note this permutes reports too!
         self.enforce(0 < len(self.steps), 'Scenario without step(s) - Step, Given, When, Then, And, or #')
 
@@ -345,16 +339,14 @@ class Scenario(Morelia):
         # print self.predicate  #  CONSIDER  if verbose
         #visitor.suite.setUp()
 
-        try:
-            u_owe = visitor.visit(self)
-            
-            for idx, step in enumerate(self.steps):
-                if step_indices == None or idx in step_indices:  #  TODO  take out the default arg
-                    step.evaluate_steps(visitor)
-                    
-            visitor.owed(u_owe)
-        except:
-            pass
+        #try:
+        u_owe = visitor.visit(self)
+
+        for idx, step in enumerate(self.steps):
+            if step_indices == None or idx in step_indices:  #  TODO  take out the default arg
+                step.evaluate_steps(visitor)
+
+        visitor.owed(u_owe)
         #finally:
         #    visitor.suite.tearDown()
 
@@ -365,7 +357,7 @@ class Scenario(Morelia):
     def step_schedule(self):  #  TODO  rename to permute_step_schedule !
         sched = []
         pre_slug = []
-        
+
         #  TODO   deal with steps w/o whens
 
         for idx, s in enumerate(self.steps):
@@ -383,7 +375,7 @@ class Scenario(Morelia):
                     s = self.steps[idx]
                     if s.__class__ == When:  break
                     slug.append(idx)
-                        
+
                 sched.append(slug)
 
         if sched == []:  return [pre_slug]
@@ -391,11 +383,11 @@ class Scenario(Morelia):
 
     def _embellish(self):
         self.row_indices = []
-        
+
         for step in self.steps:
             rowz = int(step.steps != [] and step.steps[0].__class__ is Row)
             self.row_indices.append(rowz)
-        
+
         return self.row_indices.count(1) > 0
 
     def count_Row_dimensions(self):
@@ -406,17 +398,17 @@ class Scenario(Morelia):
 
     def to_html(self):
         return ['\n<div><table width="100%"><tr style="background-color: #cdffb8;">' +
-                '<td align="right" valign="top" width="100"><em>' + self.concept + '</em>:</td><td colspan="101">' + \
-                                            _clean_html(self.predicate) + '</td></tr>', '</table></div>']
+                '<td align="right" valign="top" width="100"><em>' + self.concept + '</em>:</td><td colspan="101">' +\
+                _clean_html(self.predicate) + '</td></tr>', '</table></div>']
 
 
 class Step(Viridis):
     def my_parent_type(self):  return Scenario
 
-    def evaluate_step(self, v):
+    def test_step(self, v):
         self.find_step_name(v.suite)
 
-# ERGO  use "born again pagan" somewhere
+        # ERGO  use "born again pagan" somewhere
 
         try:
             self.method(*self.matches)
@@ -438,7 +430,7 @@ class Step(Viridis):
         for self.replitron in replitrons:
             for x in range(0, len(self.parent.row_indices)):
                 self.table = self.parent.steps[x].steps
-            
+
                 if self.table != []:
                     q = 0
 
@@ -451,8 +443,8 @@ class Step(Viridis):
     def replace_replitron(self, x, q):
         if self.title != self.replitron:  return
         at = self.parent.row_indices[x] + 1
-        
-        if at >= len(self.table):  
+
+        if at >= len(self.table):
             print 'CONSIDER this should never happen'
             return
 
@@ -461,25 +453,28 @@ class Step(Viridis):
 
         stick = self.table[at].harvest()
         found = stick[q]  #  CONSIDER  this array overrun is what you get when your table is ragged
-            #  CONSIDER  only if it's not nothing?
+        #  CONSIDER  only if it's not nothing?
         found = found.replace('\n', '\\n')  #  CONSIDER  crack the multi-line argument bug, and take this hack out!
         self.copy = self.copy.replace('<'+self.replitron+'>', found)
 
         # CONSIDER  mix replitrons and matchers!
-        
+
     def to_html(self):
         return '\n<tr><td align="right" valign="top"><em>' + self.concept + '</em></td><td colspan="101">' + _clean_html(self.predicate) + '</td></tr>', ''
 
 
 class Given(Step):   #  CONSIDER  distinguish these by fault signatures!
     def prefix(self):  return '  '
+
 class When(Step):  #  TODO  cycle these against the Scenario
     def prefix(self):  return '   '
     def to_html(self):
         return '\n<tr style="background-color: #cdffb8; background: url(http://www.zeroplayer.com/images/stuff/aqua_gradient.png) no-repeat; background-size: 100%;"><td align="right" valign="top"><em>' + self.concept + '</em></td><td colspan="101">' + _clean_html(self.predicate) + '</td></tr>', ''
+
 class Then(Step):
     def prefix(self):  return '   '
-class And(Step):  
+
+class And(Step):
     def prefix(self):  return '    '
 
 #  CONSIDER  how to validate that every row you think you wrote actually ran?
@@ -502,14 +497,14 @@ class Row(Morelia):
         if idx == 0:
             color = 'silver'
             em = 'em'
-        elif ((2 + idx) / 3) % 2 == 0:  
+        elif ((2 + idx) / 3) % 2 == 0:
             color = '#eeffff'
         else:
             color = '#ffffee'
-        
+
         for col in self.harvest():
             html += '<td style="background-color: %s;"><%s>' % (color, em) + _clean_html(col) + '</%s></td>' % em
-            
+
         html += '<td>&#160;</td></tr>'  #  CONSIDER  the table needn't stretch out so!
         return html, ''
 
@@ -544,10 +539,6 @@ class Comment(Morelia):
     def to_html(self):
         return '\n# <em>' + _clean_html(self.predicate) + '</em><br/>', ''
 
-if __name__ == '__main__':
-    import os
-    os.system('python ../tests/morelia_suite.py')   #  NOTE  this might not return the correct shell value
-
 
 def _special_range(n):  #  CONSIDER  better name
     return xrange(n) if n else [0]
@@ -555,8 +546,7 @@ def _special_range(n):  #  CONSIDER  better name
 
 def _permute_indices(arr):
     return list(_product(*_imap(_special_range, arr)))
-      #  tx to Chris Rebert, et al, on the Python newsgroup for curing my brainlock here!!
-
+    #  tx to Chris Rebert, et al, on the Python newsgroup for curing my brainlock here!!
 
 def _product(*args, **kwds):
     # product('ABCD', 'xy') --> Ax Ay Bx By Cx Cy Dx Dy
@@ -566,8 +556,8 @@ def _product(*args, **kwds):
     for pool in pools:
         result = [x+[y] for x in result for y in pool]
     for prod in result:
-        yield tuple(prod) 
-        
+        yield tuple(prod)
+
 def _imap(function, *iterables):
     iterables = map(iter, iterables)
     while True:
@@ -578,11 +568,16 @@ def _imap(function, *iterables):
             yield function(*args)
 
 def _clean_html(string):
-    return string.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;'). \
-                            replace('"', '&quot;').replace("'", '&#39;')
+    return string.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').\
+    replace('"', '&quot;').replace("'", '&#39;')
 
 #  CONSIDER  display all missing steps not just the first
 #  ERGO  Morelia should raise a form in any state!
 #  ERGO  get Morelia working with more Pythons - virtualenv it!
 #  ERGO  moralia should try the regex first then the step name
 #  ERGO  pay for "Bartender" by Sacred Hoop
+
+
+if __name__ == '__main__':
+    import os
+    os.system('python ../tests/bdd4django_suite.py')   #  NOTE  this might not return the correct shell value
