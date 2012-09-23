@@ -54,6 +54,7 @@ Tries to find following the priority list:
 + by partial text
 + by href
 + by partial href
+This
 
 
 
