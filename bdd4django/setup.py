@@ -9,7 +9,7 @@ setup(name         = 'BDD4Django',
       description  = '"Behavior Driven Development" (BDD) -- ' +
                      'Integrating Morelia + Splinter + Django',
       author       = u'Daniel França',
-      url          = 'https://github.com/danielfranca/BDD4Django',
+      url          = 'http://github.com/danielfranca/BDD4Django',
       author_email = 'daniel.franca@gmail.com',
       py_modules   = ['bdd4django'],
       keywords     = "test bdd behavior django splinter morelia",

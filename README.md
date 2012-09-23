@@ -13,6 +13,17 @@ Splinter is fully documented here http://splinter.cobrateam.info/docs/
 
 BDD4Django comes with a TestCase class that inherits Django LiveServerTestCase, this allow the tests to be executed in a browser running on the test database.
 
+Install
+-------
+
+Install it with:
+  pip install bdd4django
+
+Requirements
+------------
+Splinter
+Django
+
 Usage Instructions
 ------------------
 Create a testcase class that inherits from BDDTestCase:
