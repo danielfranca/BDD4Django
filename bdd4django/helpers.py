@@ -1,9 +1,7 @@
 # *-* coding: utf-8 *-*
 from django.test import LiveServerTestCase
-from django.contrib.auth.models import User
 from django.core.management import call_command
 
-from model_mommy import mommy
 from bdd4django import Parser
 from splinter.browser import Browser
 from selenium.common.exceptions import WebDriverException
@@ -24,6 +22,11 @@ class BDDTestCase(LiveServerTestCase):
 
     def parse_feature_file(self, app, scenarios = None):
 
+        """
+        Parse the file of BDD features
+        @param app:
+        @param scenarios:
+        """
         try:
             import userena
             call_command('check_permissions')
@@ -33,6 +36,12 @@ class BDDTestCase(LiveServerTestCase):
         Parser().parse_file('apps/{0}/{0}.feature'.format( app ), scenarios).evaluate(self)
 
     def click_element(self, find_methods, name):
+        """
+        Click an element
+
+        @param find_methods:
+        @param name:
+        """
         for find in find_methods:
             elements = find( name )
             if len(elements) > 0:
@@ -109,14 +118,6 @@ class BDDTestCase(LiveServerTestCase):
         r'I\'m redirected to url "([^"]+)"'
         self.assertEqual( self.browser.url, self.live_server_url+url )
 
-    def step_a_logged_user_(self, username):
-        r'a logged user "([^"]+)"'
-        user = mommy.make_one( User,username=username )
-        user.set_password('abc123')
-        user.is_active = True
-        user.save()
 
-        self.step_i_visit_url('/accounts/login/')
-        self.step_I_login_as_with_password( username=username,password='abc123')
 
 
