@@ -16,8 +16,8 @@ BDD4Django comes with a TestCase class that inherits Django LiveServerTestCase, 
 Install
 -------
 
-Install it with pip
-    pip install bdd4django
+Install it with pip:
+     pip install bdd4django
 
 Requirements
 ------------
