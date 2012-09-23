@@ -17,7 +17,7 @@ Install
 -------
 
 Install it with pip:
-     pip install bdd4django
+> pip install bdd4django
 
 Requirements
 ------------
