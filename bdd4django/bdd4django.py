@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-__version__ = '0.1.4'
+__version__ = '0.1.6'
 
 #  TODO  get working with python 3,4,5, etc...
 #  TODO  put http://www.dawnoftimecomics.com/index.php on comixpedia!
@@ -248,10 +248,14 @@ class Parser:
                         self.ignore_scenario = False
 
                         if not self.line.strip().endswith(self.scenarios):
+                            print 'Ignoring scenario: '+self.line
                             self.ignore_scenario = True
 
                     if self.ignore_scenario:
                         continue
+
+                if isinstance( self.thang, Scenario ):
+                    print '***** Registering scenario: '+self.line
 
                 return self._register_line(m.groups())
 
