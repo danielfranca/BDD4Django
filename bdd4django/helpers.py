@@ -13,12 +13,14 @@ class BDDTestCase(LiveServerTestCase):
     def extra_setup(self):
         pass
 
-    def setUp(self):
-        self.browser = Browser()
-        self.extra_setup()
+    def setUp(self, from_bdd=False):
+        if from_bdd:
+            self.browser = Browser()
+            self.extra_setup()
 
-    def tearDown(self):
-        self.browser.quit()
+    def tearDown(self, from_bdd=False):
+        if from_bdd:
+            self.browser.quit()
 
     def parse_feature_file(self, app, scenarios = None):
 

@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
-__version__ = '0.1.6'
+__version__ = '0.1.7'
 
 #  TODO  get working with python 3,4,5, etc...
 #  TODO  put http://www.dawnoftimecomics.com/index.php on comixpedia!
 
-import re
+import re, os, sys
 
 #  TODO  what happens with blank table items?
 #  ERGO  river is to riparian as pond is to ___?
@@ -44,9 +44,9 @@ class Morelia:
         name = self.i_look_like()
         return '\s*(' + name + '):?\s+(.*)'
 
-    def evaluate_steps(self, v):
+    def evaluate_steps(self, v, scenarios2run = None):
         v.visit(self)
-        for step in self.steps:  step.evaluate_steps(v)
+        for step in self.steps:  step.evaluate_steps(v, scenarios2run)
 
     def test_step(self, v):  pass
     def i_look_like(self):  return self.my_class_name()
@@ -164,11 +164,10 @@ class Viridis(Morelia):
         self.find_step_name(suite)
         self.method(*self.matches)
 
-
 class Parser:
 
     ignore_scenario = False
-    scenarios = None
+    scenarios2run = None
 
     def __init__(self):
         self.thangs = [ Feature, Scenario,
@@ -178,9 +177,9 @@ class Parser:
 
     def parse_file(self, filename, scenarios = None):
         prose = open(filename, 'r').read()
+        self.scenarios2run = scenarios
         self.parse_features(prose)
         self.steps[0].filename = filename
-        self.scenarios = scenarios
         return self
 
     def parse_features(self, prose):
@@ -197,7 +196,7 @@ class Parser:
 
     def rip(self, v):
         if self.steps != []:
-            self.steps[0].evaluate_steps(v)
+            self.steps[0].evaluate_steps(v, self.scenarios2run)
 
     def parse_feature(self, lines):
         self.line_number = 0
@@ -243,19 +242,19 @@ class Parser:
 
             if m and len(m.groups()) > 0:
 
-                if self.scenarios is not None:
-                    if isinstance( self.thang, Scenario ):
-                        self.ignore_scenario = False
-
-                        if not self.line.strip().endswith(self.scenarios):
-                            print 'Ignoring scenario: '+self.line
-                            self.ignore_scenario = True
-
-                    if self.ignore_scenario:
-                        continue
-
-                if isinstance( self.thang, Scenario ):
-                    print '***** Registering scenario: '+self.line
+#                if self.scenarios2run is not None:
+#                    if isinstance( self.thang, Scenario ):
+#                        self.ignore_scenario = False
+#
+#                        if not self.line.strip().endswith(self.scenarios2run):
+#                            print >> sys.stderr, 'Ignoring scenario: '+self.line
+#                            self.ignore_scenario = True
+#
+#                    if self.ignore_scenario:
+#                        continue
+#
+#                if isinstance( self.thang, Scenario ):
+#                    print >> sys.stderr, '***** Registering scenario: '+self.line
 
                 return self._register_line(m.groups())
 
@@ -325,8 +324,12 @@ class Scenario(Morelia):
 
     def my_parent_type(self):  return Feature
 
-    def evaluate_steps(self, visitor):
+    def evaluate_steps(self, visitor, scenarios2run = None):
         step_schedule = visitor.step_schedule(self)  #  TODO  test this permuter directly (and rename it already)
+
+        if scenarios2run and self.steps[0].parent.predicate not in scenarios2run:
+            print >> sys.stderr, 'Ignoring scenario: '+self.steps[0].parent.predicate
+            return
 
         for step_indices in step_schedule:   #  TODO  think of a way to TDD this C-:
             schedule = visitor.permute_schedule(self)
@@ -339,20 +342,26 @@ class Scenario(Morelia):
         self.enforce(0 < len(self.steps), 'Scenario without step(s) - Step, Given, When, Then, And, or #')
 
         name = self.steps[0].find_step_name(visitor.suite)
-        #visitor.suite = visitor.suite.__class__(name)
+
+        visitor.suite = visitor.suite.__class__(name)
+
         # print self.predicate  #  CONSIDER  if verbose
-        #visitor.suite.setUp()
+        visitor.suite.setUp(from_bdd=True)
 
-        #try:
-        u_owe = visitor.visit(self)
+        try:
+            u_owe = visitor.visit(self)
 
-        for idx, step in enumerate(self.steps):
-            if step_indices == None or idx in step_indices:  #  TODO  take out the default arg
-                step.evaluate_steps(visitor)
+            print '\n**** Scenario: '+self.steps[0].parent.predicate
 
-        visitor.owed(u_owe)
-        #finally:
-        #    visitor.suite.tearDown()
+            for idx, step in enumerate(self.steps):
+                if step_indices == None or idx in step_indices:  #  TODO  take out the default arg
+                    print 'Step: '+step.predicate
+                    step.evaluate_steps(visitor)
+
+
+            visitor.owed(u_owe)
+        finally:
+            visitor.suite.tearDown(from_bdd=True)
 
     def permute_schedule(self):  #  TODO  rename to permute_row_schedule
         dims = self.count_Row_dimensions()
