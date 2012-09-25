@@ -37,6 +37,14 @@ class BDDTestCase(LiveServerTestCase):
 
         Parser().parse_file('apps/{0}/{0}.feature'.format( app ), scenarios).evaluate(self)
 
+    def today(self,format='%Y-%m-%d', add_days = 0):
+        import datetime
+        td = datetime.date.today()
+        new_dt = td
+
+        new_dt += datetime.timedelta(days=add_days)
+        return new_dt.strftime( format )
+
     def click_element(self, find_methods, name):
         """
         Click an element
@@ -86,7 +94,10 @@ class BDDTestCase(LiveServerTestCase):
     def step_i_fill_in_field_with_value(self, field, value):
         r'I fill in field "([^"]+)" with value "([^"]+)"'
         value = value.decode('utf-8')
-        #import ipdb; ipdb.set_trace()
+
+        if value.startswith('eval:'):
+            val_to_exec = value.split(':')[1]
+            value = eval( val_to_exec )
 
         try:
             self.browser.find_by_id( 'id_'+field ).fill( value )
@@ -96,7 +107,8 @@ class BDDTestCase(LiveServerTestCase):
             for select in mult_select:
                 self.browser.find_by_id('id_'+field+'_'+select).first.click()
         except WebDriverException, e:
-            self.browser.choose(field, value)
+            #Seta valores de um combobox
+            self.browser.select(field, value)
             pass
 
     def step_i_fill_in_fields_with_values(self, fields, values):
@@ -119,6 +131,8 @@ class BDDTestCase(LiveServerTestCase):
     def step_im_redirected_to_url(self, url):
         r'I\'m redirected to url "([^"]+)"'
         self.assertEqual( self.browser.url, self.live_server_url+url )
+
+
 
 
 
