@@ -95,10 +95,12 @@ Check/Uncheck the checkboxes separated by comma ','
         r'I fill in field "([^"]+)" with value "([^"]+)"'
 
 Fill the field named <b>field</b> with <b>value</b>.
+This method allows a python expression as value (just put "eval:<expression>" in the value field)
+Ex: I fill in field "test" with value "self.today(add_days=1)"
 Tries to fill following the priority:
 + Simple text field
 + Multiple selection
-+ Radio
++ Select
 
 #####
 
