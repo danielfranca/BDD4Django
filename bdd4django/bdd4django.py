@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-__version__ = '0.1.9'
+__version__ = '0.2.0'
 
 #  TODO  get working with python 3,4,5, etc...
 #  TODO  put http://www.dawnoftimecomics.com/index.php on comixpedia!
@@ -328,7 +328,7 @@ class Scenario(Morelia):
         step_schedule = visitor.step_schedule(self)  #  TODO  test this permuter directly (and rename it already)
 
         if scenarios2run and self.steps[0].parent.predicate not in scenarios2run:
-            print >> sys.stderr, 'Ignoring scenario: '+self.steps[0].parent.predicate
+            print '\n!!!! Ignoring scenario: '+self.steps[0].parent.predicate
             return
 
         for step_indices in step_schedule:   #  TODO  think of a way to TDD this C-:

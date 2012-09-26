@@ -17,6 +17,15 @@ class BDDTestCase(LiveServerTestCase):
         if from_bdd:
             self.browser = Browser()
             self.extra_setup()
+        else:
+            self.prepare_database()
+
+    def prepare_database(self):
+        """
+        Prepare the database
+        Insert/Update data
+        """
+        pass
 
     def tearDown(self, from_bdd=False):
         if from_bdd:
@@ -122,11 +131,15 @@ class BDDTestCase(LiveServerTestCase):
 
     def step_i_see_the_text(self, text):
         r'I see the text "([^"]+)"'
-        self.assertTrue( self.browser.is_text_present(text,wait_time=10) )
+        self.assertTrue( self.browser.is_text_present(text,wait_time=5) )
+
+    def step_i_don_t_see_the_text(self, text):
+        r'I don\'t see the text "([^"]+)"'
+        self.assertFalse( self.browser.is_text_present(text,wait_time=5) )
 
     def step_i_see_the_element(self, id):
         r'I see the element "([^"]+)"'
-        self.assertTrue( self.browser.is_element_present_by_id(id,wait_time=10) )
+        self.assertTrue( self.browser.is_element_present_by_id(id,wait_time=5) )
 
     def step_im_redirected_to_url(self, url):
         r'I\'m redirected to url "([^"]+)"'
