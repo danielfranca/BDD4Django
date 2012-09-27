@@ -44,7 +44,10 @@ class BDDTestCase(LiveServerTestCase):
         except ImportError:
             pass
 
-        Parser().parse_file('apps/{0}/{0}.feature'.format( app ), scenarios).evaluate(self)
+        exec 'import '+app
+
+        absolute_path = eval('{0}.__path__'.format( app ))[0]
+        Parser().parse_file('{0}/{1}.feature'.format( absolute_path, app ), scenarios).evaluate(self)
 
     def today(self,format='%Y-%m-%d', add_days = 0):
         import datetime
@@ -65,7 +68,9 @@ class BDDTestCase(LiveServerTestCase):
             elements = find( name )
             if len(elements) > 0:
                 elements.first.click()
-                break
+                return
+
+        raise Exception( 'No element found: '+name )
 
     def step_i_visit_url(self, url):
         r'I visit url "([^"]+)"'
@@ -145,8 +150,9 @@ class BDDTestCase(LiveServerTestCase):
         r'I\'m redirected to url "([^"]+)"'
         self.assertEqual( self.browser.url, self.live_server_url+url )
 
-
-
-
-
+    """
+    def step_I_see_the_error_for_field(self, error, field):
+        r'I see the error "([^"]+)" for field "([^"]+)"'
+        self.browser.find_by_css( '' )
+    """
 
