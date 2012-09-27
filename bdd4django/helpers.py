@@ -1,5 +1,9 @@
 # *-* coding: utf-8 *-*
-from django.test import LiveServerTestCase
+try:
+   from django.test import LiveServerTestCase
+except ImportError: #For Django 1.3
+   from django_liveserver.testcases import LiveServerTestCase
+
 from django.core.management import call_command
 
 from bdd4django import Parser
