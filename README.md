@@ -22,7 +22,9 @@ Install it with pip:
 Requirements
 ------------
 + Splinter
-+ Django >= 1.4
++ Django >= 1.4 or Django 1.3 with django-live-server
+
+Now there's a port of django live server for Django 1.3, so you can use BDD4Django with it: https://github.com/adamcharnock/django-live-server
 
 Usage Instructions
 ------------------
