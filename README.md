@@ -124,3 +124,24 @@ Assert the presence of <b>element</b> in the html output.
         r'I\'m redirected to url "([^"]+)"'
 
 Assert the redirection <b>url</b>
+
+
+    def step_I_see_the_element_with_class(self, name, class_name):
+        r'I see the element "([^"]+)" with class "([^"]+)"'
+
+Assert the existence of an element with <b>name</b> that has the class <b>class_name</b>
+
+    def step_I_see_the_element_parent_with_class(self, name, class_name):
+        r'I see the element "([^"]+)" parent with class "([^"]+)"'
+
+Assert the existence of an element with <b>name</b> that one of its parents has the class <b>class_name</b>
+
+    def step_I_see_the_field_with_value(self, field, value):
+        r'I see the field "([^"]+)" with value "([^"]+)"'
+
+Assert the existence of a <b>field</b> with value <b>value</b>
+
+    def step_I_see_the_fields_with_values(self, fields, values):
+        r'I see the fields "([^"]+)" with values "([^"]+)"'
+
+Assert the existence of a list of <b>fields</b> separated by comma, each one of them with its correspondent value in <b>values</b>
