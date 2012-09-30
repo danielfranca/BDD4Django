@@ -4,6 +4,8 @@ try:
 except ImportError: #For Django 1.3
    from django_liveserver.testcases import LiveServerTestCase
 
+from django.test import TestCase
+
 from django.core.management import call_command
 
 from bdd4django import Parser
@@ -12,7 +14,7 @@ from selenium.common.exceptions import WebDriverException, InvalidSelectorExcept
 
 import time
 
-class BDDTestCase(LiveServerTestCase):
+class BDDLiveTestCase(LiveServerTestCase):
 
     def extra_setup(self):
         pass
