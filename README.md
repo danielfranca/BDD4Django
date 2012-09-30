@@ -28,18 +28,18 @@ Now there's a port of django live server for Django 1.3, so you can use BDD4Djan
 
 Usage Instructions
 ------------------
-Create a testcase class that inherits from BDDLiveTestCase:
+Create a testcase class that inherits from BDDTestCase:
 
-    from bdd4django.helpers import BDDLiveTestCase
+    from bdd4django.helpers import BDDTestCase
 
-    class MyTests(BDDLiveTestCase):
+    class MyTests(BDDTestCase):
 
         def test_evaluate_file(self):
             self.parse_feature_file( 'accounts' )
 
 Just write a test method that calls self.parse_feature_file passing the app name as argument (The feature file must have the name "app_name.feature")
 
-Methods from BDDLiveTestCase
+Methods from BDDTestCase
 ----------------------------
     def extra_setup(self):
 
