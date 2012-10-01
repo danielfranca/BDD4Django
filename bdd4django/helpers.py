@@ -39,11 +39,6 @@ class BDDAbstractTestCase():
         """
         pass
 
-class BDDCoreTestCase(BDDAbstractTestCase,TestCase):
-    pass
-
-class BDDTestCase(BDDAbstractTestCase, LiveServerTestCase):
-
     def parse_feature_file(self, app=None, file_path=None, scenarios=None):
 
         """
@@ -70,6 +65,11 @@ class BDDTestCase(BDDAbstractTestCase, LiveServerTestCase):
 
         new_dt += datetime.timedelta(days=add_days)
         return new_dt.strftime( format )
+
+class BDDCoreTestCase(BDDAbstractTestCase,TestCase):
+    pass
+
+class BDDTestCase(BDDAbstractTestCase, LiveServerTestCase):
 
     def click_element(self, find_methods, name):
         """
