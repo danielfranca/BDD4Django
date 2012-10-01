@@ -5,24 +5,32 @@ except ImportError: #For Django 1.3
    from django_liveserver.testcases import LiveServerTestCase
 
 from django.core.management import call_command
+from django.test import TestCase
 
 from bdd4django import Parser
 from splinter.browser import Browser
 from selenium.common.exceptions import WebDriverException, InvalidSelectorException
 
+from django.conf import settings
+
 import time
 
-class BDDTestCase(LiveServerTestCase):
+class BDDAbstractTestCase():
 
     def extra_setup(self):
         pass
 
     def setUp(self, from_bdd=False):
         if from_bdd:
-            self.browser = Browser()
+            if isinstance( self, BDDTestCase ):
+                self.browser = Browser()
             self.extra_setup()
         else:
             self.prepare_database()
+
+    def tearDown(self, from_bdd=False):
+        if from_bdd and isinstance( self, BDDTestCase ):
+            self.browser.quit()
 
     def prepare_database(self):
         """
@@ -31,11 +39,12 @@ class BDDTestCase(LiveServerTestCase):
         """
         pass
 
-    def tearDown(self, from_bdd=False):
-        if from_bdd:
-            self.browser.quit()
+class BDDCoreTestCase(BDDAbstractTestCase,TestCase):
+    pass
 
-    def parse_feature_file(self, app, scenarios = None):
+class BDDTestCase(BDDAbstractTestCase, LiveServerTestCase):
+
+    def parse_feature_file(self, app=None, file_path=None, scenarios=None):
 
         """
         Parse the file of BDD features
@@ -48,10 +57,11 @@ class BDDTestCase(LiveServerTestCase):
         except ImportError:
             pass
 
-        exec 'import '+app
+        if file_path is None:
+            exec 'import '+app
+            file_path = eval('{0}.__path__'.format( app ))[0]
 
-        absolute_path = eval('{0}.__path__'.format( app ))[0]
-        Parser().parse_file('{0}/{1}.feature'.format( absolute_path, app ), scenarios).evaluate(self)
+        Parser().parse_file('{0}/{1}.feature'.format( file_path, app ), scenarios).evaluate(self)
 
     def today(self,format='%Y-%m-%d', add_days = 0):
         import datetime
@@ -274,3 +284,4 @@ class BDDTestCase(LiveServerTestCase):
 
         for i in range(0, len_fields):
             self.assertTrue( self.step_I_see_the_field_with_value( fields[i], values[i] ) )
+
