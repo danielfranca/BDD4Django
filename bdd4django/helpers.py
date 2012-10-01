@@ -15,7 +15,7 @@ from django.conf import settings
 
 import time
 
-class BDDAbstractTestCase():
+class BDDBaseTestCase():
 
     def extra_setup(self):
         pass
@@ -66,10 +66,10 @@ class BDDAbstractTestCase():
         new_dt += datetime.timedelta(days=add_days)
         return new_dt.strftime( format )
 
-class BDDCoreTestCase(BDDAbstractTestCase,TestCase):
+class BDDCoreTestCase(BDDBaseTestCase,TestCase):
     pass
 
-class BDDTestCase(BDDAbstractTestCase, LiveServerTestCase):
+class BDDTestCase(BDDBaseTestCase, LiveServerTestCase):
 
     def click_element(self, find_methods, name):
         """
