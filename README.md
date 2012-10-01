@@ -31,8 +31,11 @@ Usage Instructions
 Create a testcase class that inherits from BDDTestCase or BDDCoreTestCase:
 
 > Use BDDCoreTestCase as the base class if you want an off-browser test
+#
 > Use BDDCoreTestCase as the base class if you want an in-browser(using Splinter) test
+#
 > Both inherit from BDDBaseTestCase
+#
 
 Simple Examples
 ---------------
