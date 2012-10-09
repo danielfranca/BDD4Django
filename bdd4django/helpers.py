@@ -267,7 +267,7 @@ class BDDTestCase(BDDBaseTestCase, LiveServerTestCase):
 
     def step_i_see_the_text(self, text):
         r'I see the text "([^"]+)"'
-        self.assertTrue( self.browser.is_text_present(text,wait_time=5) )
+        self.assertTrue( self.browser.is_text_present(text.decode('utf-8'),wait_time=5) )
 
     def step_i_don_t_see_the_text(self, text):
         r'I don\'t see the text "([^"]+)"'
