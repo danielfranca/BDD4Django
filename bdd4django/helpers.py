@@ -99,6 +99,24 @@ class BDDCoreTestCase(BDDBaseTestCase,TestCase):
         self.client.login(username=username, password=password)
         self.step_I_call_view_with_data( view, type, data )
 
+    def step_I_call_view_with_params_as_user_with_password(self, view, params, username, password):
+        r'I call view "([^"]+)" with params "([^"]+)" as user "([^"]+)" with password "([^"]+)"'
+        self.client.login(username=username, password=password)
+        self.step_I_call_view_with_params(view, params)
+
+    def step_I_call_view_with_params(self, view, params):
+        r'I call view "([^"]+)" with params "([^"]+)"'
+        params = eval(params)
+
+        if not isinstance( params, dict ):
+            raise Exception( 'Params must be a dictionary' )
+
+        self.response = self.client.get( reverse(view, args=[value for key,value in params.iteritems()]) )
+
+    def step_im_redirected_to_url(self, url):
+        r'I\'m redirected to url "([^"]+)"'
+        self.assertRedirects(self.response, url)
+
     def step_I_see_an_object_with_values(self, object, values):
         r'I see an object "([^"]+)" with values "([^"]+)"'
         obj = None
@@ -114,6 +132,7 @@ class BDDCoreTestCase(BDDBaseTestCase,TestCase):
             model   = object
 
         exec( 'from {0} import {1}'.format( modules, model ) )
+
         exec( 'obj = '+object )
         values = eval( values )
 
