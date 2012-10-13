@@ -87,10 +87,10 @@ Ex: myapp.models.Model.objects.get(id=1)
     def step_I_see_an_object_with_values(self, object, values):
         r'I see an object "([^"]+)" with values "([^"]+)"'
 
-Verifies the existence of an object in the database of type <i>object</i>, with values <i>values</i>
-You can reference a module in the <i>object</i> using the python sintax.
-Ex: myapp.models.Model
-The values parameter must be a dictionary, so in your .feature file you need to write something like this:
+Verifies the existence of an object in the database of type <i>object</i>, with values <i>values</i>.</br>
+You can reference a module in the <i>object</i> using the python sintax.</br>
+Ex: myapp.models.Model</br>
+The values parameter must be a dictionary, so in your .feature file you need to write something like this:</br>
 <i>I see an object "django.contrib.auth.User" with values "{'username':'test'}"</i>
 
 Methods from BDDTestCase
