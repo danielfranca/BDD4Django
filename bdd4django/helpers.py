@@ -14,6 +14,11 @@ from selenium.common.exceptions import WebDriverException, InvalidSelectorExcept
 
 from django.conf import settings
 
+import importlib
+
+#Imports for help:
+from django.contrib.auth.models import User,Group
+
 import time
 
 class BDDBaseTestCase():
@@ -68,7 +73,44 @@ class BDDBaseTestCase():
         new_dt += datetime.timedelta(days=add_days)
         return new_dt.strftime( format )
 
+    def import_module(self,module_object):
+        mods   = module_object.split('.')
+        module = None
+        object = module_object
+
+        try:
+            for i in range(1,len(mods)+1):
+                module = importlib.import_module('.'.join(mods[:i]))
+        except ImportError, e:
+            object = '.'.join( mods[i-1:] )
+
+        return module, object
+
+    def step_I_load_value_in(self, value, key):
+        r'I load value "([^"]+)" in "([^"]+)"'
+
+        module, object = self.import_module( value )
+
+        if module:
+            exec '{0} = module.{1}'.format( key, object )
+        else:
+            exec '{0} = {1}'.format( key, object )
+
+    def step_I_see_an_object_with_values(self, object, values):
+        r'I see an object "([^"]+)" with values "([^"]+)"'
+        obj = None
+
+        self.import_module( object )
+
+        exec( 'obj = '+object )
+        values = eval( values )
+
+        self.assertGreater( obj.objects.filter(**values), 0 )
+
+
 class BDDCoreTestCase(BDDBaseTestCase,TestCase):
+
+    return_values = None
 
     def step_I_call_view(self, view):
         r'I call view "([^"]+)"'
@@ -113,30 +155,43 @@ class BDDCoreTestCase(BDDBaseTestCase,TestCase):
 
         self.response = self.client.get( reverse(view, args=[value for key,value in params.iteritems()]) )
 
+    def step_I_call_method_with_params(self, method, params):
+        r'I call method "([^"]+)" with params "([^"]+)"'
+
+        obj = None
+
+        module, method = self.import_module( method )
+
+        params = eval(params)
+
+        if not isinstance( params, dict ):
+            raise Exception( 'Params must be a dictionary' )
+
+        exec 'self.return_values = module.{0}(**params)'.format( method, params )
+
+        if not isinstance( self.return_values, tuple ):
+            self.return_values = tuple([self.return_values])
+
+
+    def step_I_get_the_return(self, return_values):
+        r'I get the return "([^"]+)"'
+
+        values = []
+
+        for val in return_values.split(','):
+            module, object = self.import_module( val )
+            if module:
+                values.append( eval( 'module.{0}'.format( object ) ) )
+            else:
+                values.append( eval( object ) )
+
+        values = tuple(values)
+
+        self.assertEqual( values, self.return_values )
+
     def step_im_redirected_to_url(self, url):
         r'I\'m redirected to url "([^"]+)"'
         self.assertRedirects(self.response, url)
-
-    def step_I_see_an_object_with_values(self, object, values):
-        r'I see an object "([^"]+)" with values "([^"]+)"'
-        obj = None
-
-        last_dot = object.rfind('.')
-        if last_dot >= 0:
-            modules = object[:last_dot]
-            model   = object[last_dot+1:]
-        else:
-            app = self.__module__.split('.')[0]
-
-            modules = app+'.models'
-            model   = object
-
-        exec( 'from {0} import {1}'.format( modules, model ) )
-
-        exec( 'obj = '+object )
-        values = eval( values )
-
-        self.assertGreater( obj.objects.filter(**values), 0 )
 
     def step_I_get_the_context_variables_with_values(self, variables, values):
         r'I get the context variables "([^"]+)" with values "([^"]+)"'
