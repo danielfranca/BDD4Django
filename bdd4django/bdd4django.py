@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-__version__ = '0.3.1'
+__version__ = '0.3.0'
 
 #  TODO  get working with python 3,4,5, etc...
 #  TODO  put http://www.dawnoftimecomics.com/index.php on comixpedia!
@@ -355,9 +355,8 @@ class Scenario(Morelia):
 
             for idx, step in enumerate(self.steps):
                 if step_indices == None or idx in step_indices:  #  TODO  take out the default arg
-                    print 'Step: '+step.predicate
+                    print 'Step: '+step.augment_predicate()
                     step.evaluate_steps(visitor)
-
 
             visitor.owed(u_owe)
         finally:
