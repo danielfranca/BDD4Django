@@ -306,7 +306,7 @@ class BDDTestCase(BDDBaseTestCase, LiveServerTestCase):
                 input.fill( value )
             elif input_type == 'SELECT':
 
-                options = self.browser.find_by_xpath("//select[@name='{0}']/option[contains(text(),'{1}')]".format( field, value ))
+                options = self.browser.find_by_xpath(u"//select[@name='{0}']/option[contains(text(),'{1}')]".format( field, value ))
 
                 if len(options) == 0:
                     raise Exception( 'Option \'{0}\' not found for select \'{1}\': '.format( value, field ) )
@@ -394,7 +394,7 @@ class BDDTestCase(BDDBaseTestCase, LiveServerTestCase):
                 val_to_exec = value.split(':')[1]
                 value = eval( val_to_exec )
 
-            elements = self.browser.find_by_css( "input[name='{0}'][value='{1}']".format( field, value.encode('utf-8') ) )
+            elements = self.browser.find_by_css( u"input[name='{0}'][value='{1}']".format( field, value.encode('utf-8') ) )
 
             #is this a checkbox?
             if len(elements) > 0 and elements.first.outer_html.find( 'type=\'radio\'' ) >= 0:
@@ -402,11 +402,11 @@ class BDDTestCase(BDDBaseTestCase, LiveServerTestCase):
 
             #Maybe is a select?
             if len(elements) == 0:
-                elements = [ elem for elem in self.browser.find_by_xpath( "//select[@name='{0}']/option[text() and . = ../option[@selected]]".format( field ) ) if elem.outer_html.find('selected=') > -1 and elem.text == value ]
+                elements = [ elem for elem in self.browser.find_by_xpath( u"//select[@name='{0}']/option[text() and . = ../option[@selected]]".format( field ) ) if elem.outer_html.find('selected=') > -1 and elem.text == value ]
 
             #or a textarea
             if len(elements) == 0:
-                elements = [elem for elem in self.browser.find_by_css( "textarea[name='{0}']".format( field ) ) if elem.value == value]
+                elements = [elem for elem in self.browser.find_by_css( u"textarea[name='{0}']".format( field ) ) if elem.value == value]
 
             #or a checkbox
             if len(elements) == 0:
@@ -414,7 +414,7 @@ class BDDTestCase(BDDBaseTestCase, LiveServerTestCase):
                     value = True
                 else:
                     value = False
-                elements = [elem for elem in self.browser.find_by_css( "input[name='{0}']".format( field ) ) if elem.checked == value]
+                elements = [elem for elem in self.browser.find_by_css( u"input[name='{0}']".format( field ) ) if elem.checked == value]
 
             if len(elements) == 0:
                 raise Exception( 'Element \'{0}\' with value \'{1}\' not found'.format( field, value ) )
