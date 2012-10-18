@@ -398,7 +398,7 @@ class BDDTestCase(BDDBaseTestCase, LiveServerTestCase):
                 val_to_exec = value.split(':')[1]
                 value = eval( val_to_exec )
 
-            elements = self.browser.find_by_css( u"input[name='{0}'][value='{1}']".format( field, value.encode('utf-8') ) )
+            elements = self.browser.find_by_css( u"input[name='{0}'][value='{1}']".format( field, value ) )
 
             #is this a checkbox?
             if len(elements) > 0 and elements.first.outer_html.find( 'type=\'radio\'' ) >= 0:
