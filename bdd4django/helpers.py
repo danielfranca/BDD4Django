@@ -100,12 +100,16 @@ class BDDBaseTestCase():
         r'I see an object "([^"]+)" with values "([^"]+)"'
         obj = None
 
-        self.import_module( object )
+        module, object = self.import_module( object )
 
-        exec( 'obj = '+object )
+        if module:
+            exec( 'obj = module.'+object )
+        else:
+            exec( 'obj = '+object )
+
         values = eval( values )
 
-        self.assertGreater( obj.objects.filter(**values), 0 )
+        self.assertGreater( obj.objects.filter(**values).count(), 0 )
 
 
 class BDDCoreTestCase(BDDBaseTestCase,TestCase):
