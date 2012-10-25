@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-__version__ = '0.3.5'
+__version__ = '0.3.6'
 
 #  TODO  get working with python 3,4,5, etc...
 #  TODO  put http://www.dawnoftimecomics.com/index.php on comixpedia!
