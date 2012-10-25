@@ -29,7 +29,8 @@ class BDDBaseTestCase():
     def setUp(self, from_bdd=False):
         if from_bdd:
             if isinstance( self, BDDTestCase ):
-                self.browser = Browser()
+                browser_name = settings.__getattr__('BDD_BROWSER','firefox')
+                self.browser = Browser(browser_name)
             self.extra_setup()
         else:
             self.prepare_database()
