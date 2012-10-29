@@ -119,7 +119,13 @@ class BDDCoreTestCase(BDDBaseTestCase,TestCase):
 
     def step_I_call_view(self, view):
         r'I call view "([^"]+)"'
-        self.response = self.client.get( reverse(view) )
+        if ',' in view:
+            view_parts = view.split(',')
+            view_parts[0] = '"'+view_parts[0].strip()+'"'
+            view = ','.join(view_parts)
+
+        url = eval( 'reverse('+view+')' )
+        self.response = self.client.get( url )
 
     def step_I_call_view_as_user_with_password(self, view, username, password):
         r'I call view "([^"]+)" as user "([^"]+)" with password "([^"]+)"'
@@ -137,9 +143,16 @@ class BDDCoreTestCase(BDDBaseTestCase,TestCase):
         else:
             method = self.client.get
 
-        data = eval( data )
+        data = eval(data)
 
-        self.response = method( reverse(view), data=data )
+        if ',' in view:
+            view_parts = view.split(',')
+            view_parts[0] = '"'+view_parts[0].strip()+'"'
+            view = ','.join(view_parts)
+
+        url = eval('reverse('+view+')')
+
+        self.response = method( url, data=data )
 
     def step_I_call_view_with_data_as_user_with_password(self, view, type, data, username, password):
         r'I call view "([^"]+)" with ([^"]+) data "([^"]+)" as user "([^"]+)" with password "([^"]+)"'
@@ -390,10 +403,7 @@ class BDDTestCase(BDDBaseTestCase, LiveServerTestCase):
 
     def step_I_see_the_field_with_value(self, field, value):
         r'I see the field "([^"]+)" with value "([^"]+)"'
-        value = value.decode('utf-8')
-
-        values = value.split('/')
-
+        values = value.decode('utf-8').split('/')
         for value in values:
             if value.startswith('eval:'):
                 val_to_exec = value.split(':')[1]
@@ -402,12 +412,12 @@ class BDDTestCase(BDDBaseTestCase, LiveServerTestCase):
             elements = self.browser.find_by_css( u"input[name='{0}'][value='{1}']".format( field, value ) )
 
             #is this a checkbox?
-            if len(elements) > 0 and elements.first.outer_html.find( 'type=\'radio\'' ) >= 0:
+            if len(elements) > 0 and 'type=\'radio\'' in elements.first.outer_html:
                 elements = [ elem for elem in elements if elem.checked ]
 
-            #Maybe is a select?
+            #Maybe is a select? (Compare with value or text)
             if len(elements) == 0:
-                elements = [ elem for elem in self.browser.find_by_xpath( u"//select[@name='{0}']/option[text() and . = ../option[@selected]]".format( field ) ) if elem.outer_html.find('selected=') > -1 and elem.text == value ]
+                elements = [ elem for elem in self.browser.find_by_xpath( u"//select[@name='{0}']/option[text() and . = ../option[@selected]]".format( field ) ) if 'selected=' in elem.outer_html and (elem.text == value or elem.value == value ) ]
 
             #or a textarea
             if len(elements) == 0:
@@ -416,10 +426,10 @@ class BDDTestCase(BDDBaseTestCase, LiveServerTestCase):
             #or a checkbox
             if len(elements) == 0:
                 if value == '1' or value.upper() == 'TRUE' or value.upper() == 'CHECKED':
-                    value = True
+                    bool_value = True
                 else:
-                    value = False
-                elements = [elem for elem in self.browser.find_by_css( u"input[name='{0}']".format( field ) ) if elem.checked == value]
+                    bool_value = False
+                elements = [elem for elem in self.browser.find_by_css( u"input[name='{0}']".format( field ) ) if elem.checked == bool_value]
 
             if len(elements) == 0:
                 raise Exception( 'Element \'{0}\' with value \'{1}\' not found'.format( field, value ) )
