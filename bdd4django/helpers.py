@@ -54,8 +54,10 @@ class BDDBaseTestCase():
         @param scenarios:
         """
         try:
-            import userena
-            call_command('check_permissions')
+            from django.conf import settings
+            if 'userena' in settings.INSTALLED_APPS:
+                import userena
+                call_command('check_permissions')
         except ImportError:
             pass
 
@@ -125,7 +127,7 @@ class BDDCoreTestCase(BDDBaseTestCase,TestCase):
             view = ','.join(view_parts)
 
         url = eval( 'reverse('+view+')' )
-        self.response = self.client.get( url )
+        self.response = self.client.get( url, follow=True )
 
     def step_I_call_view_as_user_with_password(self, view, username, password):
         r'I call view "([^"]+)" as user "([^"]+)" with password "([^"]+)"'
@@ -152,7 +154,7 @@ class BDDCoreTestCase(BDDBaseTestCase,TestCase):
 
         url = eval('reverse('+view+')')
 
-        self.response = method( url, data=data )
+        self.response = method( url, data=data, follow=True )
 
     def step_I_call_view_with_data_as_user_with_password(self, view, type, data, username, password):
         r'I call view "([^"]+)" with ([^"]+) data "([^"]+)" as user "([^"]+)" with password "([^"]+)"'
@@ -235,6 +237,10 @@ class BDDCoreTestCase(BDDBaseTestCase,TestCase):
         r'I see the text "([^"]+)" in template'
         self.assertContains( self.response, text )
 
+    def step_I_see_the_text_in_template_with_status_code(self, text, status_code):
+        r'I see the text "([^"]+)" in template with status code "([\d]+)"'
+        self.assertContains( self.response, text, status_code=int(status_code))
+
 
 
 class BDDTestCase(BDDBaseTestCase, LiveServerTestCase):
@@ -272,14 +278,16 @@ class BDDTestCase(BDDBaseTestCase, LiveServerTestCase):
 
         self.click_element(find_methods,name)
 
+    def step_I_submit_the_form(self):
+        r'I submit the form'
+        self.browser.find_by_css('input[type="submit"],input[value="submit"]').first.click()
 
     def step_I_login_as_with_password(self, username, password):
         r'I login as "([^"]+)" with password "([^"]+)"'
         self.browser.fill( 'username', username )
         self.browser.fill( 'password', password )
 
-        submit = self.browser.find_by_css('input[type="submit"],input[value="submit"]').first
-        submit.click()
+        self.step_I_submit_the_form()
 
     def step_i_check_fields(self, fields):
         r'I check fields "([^"]+)"'
@@ -311,6 +319,9 @@ class BDDTestCase(BDDBaseTestCase, LiveServerTestCase):
         if value.startswith('eval:'):
             val_to_exec = value.split(':')[1]
             value = eval( val_to_exec )
+
+        if isinstance(value,int):
+            value = unicode(value)
 
         fields = self.browser.find_by_name( field )
 
