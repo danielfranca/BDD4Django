@@ -46,15 +46,18 @@ set the settings variable BDD_BROWSER in your project settings:
 
 Tutorials
 ---------------
-I did some tutorials to help people start using BDD4Django.
-You can check these tutorials in the follow links:
+<p>I did some tutorials to help people start using BDD4Django.
+You can check these tutorials in the follow links:</p>
 
 English:
 http://codevening.wordpress.com/2012/10/18/bdd4django-tutorial/
+#
 http://codevening.wordpress.com/2012/10/31/tutorial-bdd4django-part-2/
-
+#
+#
 Portuguese:
 http://codevening.wordpress.com/2012/10/20/tutorial-de-bdd4django-portugues/
+#
 http://codevening.wordpress.com/2012/11/05/tutorial-de-bdd4django-parte-2-portugues/
 
 The package comes with a demo app that is used in the part 2 of these tutorials, enjoy it.
