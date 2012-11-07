@@ -262,6 +262,8 @@ class BDDTestCase(BDDBaseTestCase, LiveServerTestCase):
 
     def step_i_visit_url(self, url):
         r'I visit url "([^"]+)"'
+        if url.startswith('eval:'):
+            url = eval(url[5:])
         self.browser.visit( self.live_server_url+url )
 
     def step_I_click_the_link(self, name):
