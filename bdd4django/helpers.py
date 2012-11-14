@@ -114,6 +114,19 @@ class BDDBaseTestCase():
 
         self.assertGreater( obj.objects.filter(**values).count(), 0 )
 
+    def step_I_wait_seconds(self, seconds):
+        r'I wait ([0-9\.]+) second[s]?'
+        import time
+        time.sleep(float(seconds))
+
+    def step_I_wait_and_see(self):
+        r'I wait and see'
+        try:
+            import ipdb;
+            ipdb.set_trace()
+        except ImportError:
+            import pdb;
+            pdb.set_trace()
 
 class BDDCoreTestCase(BDDBaseTestCase,TestCase):
 
