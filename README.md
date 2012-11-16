@@ -133,6 +133,21 @@ Ex: myapp.models.Model
 The values parameter must be a dictionary, so in your .feature file you need to write something like this:</br>
 <i>I see an object "django.contrib.auth.User" with values "{'username':'test'}"</i>
 
+```python
+    def step_I_wait_seconds(self, seconds):
+        r'I wait ([0-9\.]+) second[s]?'
+```
+
+Wait <i>seconds</i> seconds before continue to the next step.
+It's useful if you need to wait some event or an animation.
+
+```python
+    def step_I_wait_and_see(self):
+        r'I wait and see'
+```
+
+It adds a breakpoint in the test flow, so you can inspect the class variables and analyse the test in a pause mode.
+
 Methods from BDDTestCase
 ----------------------------
 
@@ -341,10 +356,4 @@ Assert the existence of the context <i>variables</i> with <i>values</i>
 <i>variables</i> and <i>values</i> are passed separated by "|"(pipe)
 You can use a python statement as both of them.
 
-```python
-def step_I_see_the_text_in_template(self, text):
-    r'I see the text "([^"]+)" in template'
-```
-
-Assert the existence of the <i>text</i> content in the output template
-
+```pyt
