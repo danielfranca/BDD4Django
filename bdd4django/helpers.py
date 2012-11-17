@@ -202,7 +202,7 @@ class BDDCoreTestCase(BDDBaseTestCase,TestCase):
 
         exec 'self.return_values = module.{0}(**params)'.format( method, params )
 
-        if not isinstance( self.return_values, tuple ):
+        if not isinstance(self.return_values, tuple) and not isinstance(self.return_values, list):
             self.return_values = tuple([self.return_values])
 
 
