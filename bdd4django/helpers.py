@@ -29,7 +29,7 @@ class BDDBaseTestCase():
     def setUp(self, from_bdd=False):
         if from_bdd:
             if isinstance( self, BDDTestCase ):
-                browser_name = settings.__getattr__('BDD_BROWSER','firefox')
+                browser_name = getattr(settings,'BDD_BROWSER','firefox')
                 self.browser = Browser(browser_name)
             self.extra_setup()
         else:
