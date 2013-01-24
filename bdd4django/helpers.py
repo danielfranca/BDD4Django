@@ -443,7 +443,7 @@ class BDDTestCase(BDDBaseTestCase, LiveServerTestCase):
 
             #Maybe is a select? (Compare with value or text)
             if len(elements) == 0:
-                elements = [ elem for elem in self.browser.find_by_xpath( u"//select[@name='{0}']/option[text() and . = ../option[@selected]]".format( field ) ) if 'selected=' in elem.outer_html and (elem.text == value or elem.value == value ) ]
+                elements = [ elem for elem in self.browser.find_by_xpath( u"//select[@name='{0}']/option[text()]".format( field ) ) if (elem.text == value or elem.value == value and elem.selected ) ]
 
             #or a textarea
             if len(elements) == 0:
